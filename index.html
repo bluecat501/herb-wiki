@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>台灣常見草藥圖鑑 | 本草知識庫</title>
+  <style>
+    :root {
+      --bg-paper: #F4EFE6;
+      --paper-card: #FCF9F2;
+      --ink-green: #233D32;
+      --ink-green-light: #E6ECE8;
+      --wood-gold: #9A6B32;
+      --cinnabar: #A8382B;
+      --warn-bg: #F9F0E1;
+      --warn-border: #C88A4B;
+      --text-ink: #24211E;
+      --text-muted: #635B52;
+      --border-double: #C9BFA9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Serif TC", "PMingLiU", "Microsoft JhengHei", serif;
+      background-color: var(--bg-paper);
+      background-image: radial-gradient(rgba(154, 107, 50, 0.08) 1px, transparent 0);
+      background-size: 24px 24px;
+      color: var(--text-ink);
+      line-height: 1.7;
+    }
+    header {
+      background: linear-gradient(180deg, #1E352B 0%, #2B4A3D 100%);
+      color: #F6F1E7;
+      padding: 2.8rem 1.5rem 2.4rem;
+      text-align: center;
+      border-bottom: 5px double var(--wood-gold);
+      position: relative;
+    }
+    .header-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      border: 1px solid rgba(212, 184, 134, 0.35);
+      padding: 1.5rem 1.25rem;
+      position: relative;
+    }
+    .seal-stamp {
+      display: inline-block;
+      background-color: var(--cinnabar);
+      color: #FDF8F2;
+      font-size: 0.78rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 0.2rem 0.65rem;
+      border: 1px solid #E29B8E;
+      border-radius: 3px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    }
+    header h1 {
+      font-family: "DFKai-SB", "BiauKai", "Noto Serif TC", serif;
+      font-size: 2.35rem;
+      letter-spacing: 6px;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    header p {
+      color: #DCD4C4;
+      font-size: 0.98rem;
+      letter-spacing: 1.5px;
+    }
+    .safety-banner {
+      background: var(--warn-bg);
+      border-bottom: 1px solid var(--warn-border);
+      color: #6B4419;
+      font-size: 0.85rem;
+      padding: 0.65rem 1.25rem;
+      text-align: center;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 1.75rem 1.5rem; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: space-between; align-items: center;
+      margin-bottom: 1.75rem; background: var(--paper-card);
+      padding: 1rem 1.25rem; border-radius: 6px;
+      border: 1px solid var(--border-double);
+      box-shadow: 0 2px 8px rgba(35, 61, 50, 0.05);
+    }
+    .search-box {
+      flex: 1; min-width: 220px; padding: 0.55rem 0.95rem;
+      border: 1px solid var(--border-double); border-radius: 4px;
+      background: #FFFDF9; font-size: 0.92rem; outline: none;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    .search-box:focus { border-color: var(--ink-green); }
+    .filters { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .filter-btn {
+      padding: 0.4rem 0.9rem; border-radius: 4px;
+      border: 1px solid var(--ink-green); background: transparent;
+      color: var(--ink-green); cursor: pointer; font-size: 0.85rem;
+      transition: all 0.2s; font-family: "Noto Sans TC", sans-serif;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--ink-green); color: #F6F1E7;
+    }
+    .log-toggle-btn {
+      background: var(--wood-gold); color: #FFFDF9; border: 1px solid #7A5222;
+      padding: 0.45rem 0.95rem; border-radius: 4px; cursor: pointer;
+      font-size: 0.85rem; font-family: "Noto Sans TC", sans-serif;
+    }
+    .log-toggle-btn:hover { background: #825826; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.4rem;
+    }
+    .card {
+      background: var(--paper-card);
+      border: 1px solid var(--border-double);
+      outline: 3px double rgba(154, 107, 50, 0.25);
+      outline-offset: -6px;
+      border-radius: 6px; overflow: hidden; cursor: pointer;
+      transition: transform 0.22s, box-shadow 0.22s;
+      display: flex; flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 22px rgba(35, 61, 50, 0.14);
+      border-color: var(--wood-gold);
+    }
+    .card-banner {
+      height: 120px; background: var(--ink-green-light);
+      border-bottom: 1px solid var(--border-double);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .card-banner img { width: 100%; height: 100%; object-fit: cover; }
+    .svg-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      color: var(--ink-green); font-size: 0.85rem; letter-spacing: 2px;
+    }
+    .badge {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--cinnabar); color: #FDF8F2;
+      font-size: 0.75rem; padding: 0.18rem 0.6rem; border-radius: 3px;
+      letter-spacing: 1px; font-family: "Noto Sans TC", sans-serif;
+    }
+    .card-body { padding: 1.35rem; flex: 1; display: flex; flex-direction: column; }
+    .card-title {
+      font-family: "DFKai-SB", "BiauKai", "Noto Serif TC", serif;
+      font-size: 1.45rem; color: var(--ink-green); font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .card-sci {
+      font-size: 0.8rem; color: var(--text-muted);
+      font-style: italic; margin-bottom: 0.65rem;
+      font-family: Georgia, serif;
+    }
+    .card-nature {
+      display: inline-block; background: #EFE8DA; color: #734B1D;
+      border: 1px solid #D8CBB5;
+      font-size: 0.8rem; padding: 0.15rem 0.55rem; border-radius: 3px;
+      margin-bottom: 0.8rem; align-self: flex-start;
+      font-family: "Noto Sans TC", sans-serif;
+    }
+    .card-desc {
+      font-size: 0.92rem; color: var(--text-ink);
+      margin-bottom: 1rem; flex: 1;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    .card-footer {
+      font-size: 0.82rem; color: var(--wood-gold); font-weight: 600;
+      border-top: 1px dashed var(--border-double); padding-top: 0.65rem;
+      letter-spacing: 1px; font-family: "Noto Sans TC", sans-serif;
+    }
+    /* Modal 藥方箋彈窗 */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(24, 34, 29, 0.62); z-index: 100;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--paper-card); max-width: 650px; width: 100%;
+      border-radius: 6px; padding: 2rem; max-height: 88vh;
+      overflow-y: auto; border: 2px solid var(--ink-green);
+      outline: 1px solid var(--wood-gold); outline-offset: -7px;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute; top: 1rem; right: 1.35rem;
+      font-size: 1.6rem; background: none; border: none;
+      cursor: pointer; color: var(--text-muted);
+    }
+    .modal h2 {
+      font-family: "DFKai-SB", "BiauKai", "Noto Serif TC", serif;
+      color: var(--ink-green); font-size: 1.75rem; letter-spacing: 2px;
+    }
+    .modal .sci { font-style: italic; color: var(--text-muted); margin-bottom: 1.1rem; font-size: 0.88rem; }
+    .detail-row { margin-bottom: 0.95rem; font-family: "Noto Sans TC", sans-serif; }
+    .detail-label {
+      font-weight: 700; color: var(--wood-gold); display: block;
+      font-size: 0.9rem; margin-bottom: 0.15rem;
+    }
+    .safety-box {
+      background: var(--warn-bg); border-left: 4px solid var(--cinnabar);
+      padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.84rem;
+      color: #5C3A14; margin-top: 1rem; font-family: "Noto Sans TC", sans-serif;
+    }
+    .cross-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.45rem; }
+    .cross-link-btn {
+      background: var(--ink-green-light); color: var(--ink-green);
+      border: 1px solid var(--ink-green); padding: 0.3rem 0.75rem;
+      border-radius: 4px; cursor: pointer; font-size: 0.84rem;
+      font-family: "Noto Sans TC", sans-serif;
+    }
+    .cross-link-btn:hover { background: var(--ink-green); color: #F6F1E7; }
+    .log-entry {
+      background: #FFFDF9; border-left: 4px solid var(--wood-gold);
+      border-top: 1px solid var(--border-double);
+      border-right: 1px solid var(--border-double);
+      border-bottom: 1px solid var(--border-double);
+      padding: 0.85rem 1rem; margin-bottom: 0.75rem; border-radius: 4px;
+      font-family: "Noto Sans TC", sans-serif;
+    }
+    footer {
+      text-align: center; padding: 2rem 1rem; color: var(--text-muted);
+      font-size: 0.85rem; border-top: 1px solid var(--border-double);
+      margin-top: 2.5rem; letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="seal-stamp">本草圖鑑</div>
+    <h1>台灣常見草藥品種志</h1>
+    <p>彙整民間日常青草、性味歸經與傳統應用之本草知識庫</p>
+  </div>
+</header>
+
+<div class="safety-banner">
+  ⚠️ <strong>本草安全提醒：</strong>「天然」不等於安全；本網站彙整傳統本草資訊供知識學習參考，不構成醫療建議、劑量或處方，孕哺、慢性病、過敏體質或服藥者使用前請先諮詢醫療專業人員。
+</div>
+
+<div class="container">
+  <div class="toolbar">
+    <input type="text" id="searchInput" class="search-box" placeholder="檢索藥名、別名、性味或傳統用途（如：散寒、明目、菊科）..." />
+    <div class="filters" id="categoryFilters"></div>
+    <button class="log-toggle-btn" onclick="openLogModal()">📜 編修日誌</button>
+  </div>
+
+  <div class="grid" id="herbGrid"></div>
+</div>
+
+<!-- 草藥詳情 Modal -->
+<div class="modal-backdrop" id="detailModal" onclick="if(event.target===this) closeModal('detailModal')">
+  <div class="modal" id="detailContent"></div>
+</div>
+
+<!-- Log 日誌 Modal -->
+<div class="modal-backdrop" id="logModal" onclick="if(event.target===this) closeModal('logModal')">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('logModal')">&times;</button>
+    <h2>📜 本草知識庫編修日誌</h2>
+    <p class="sci">對應檔案：wiki/log.md</p>
+    <div id="logList"></div>
+  </div>
+</div>
+
+<footer>
+  台灣常見草藥品種知識庫 ｜ 條目索引：<code>wiki/index.md</code> ｜ 原始文獻：<code>raw/herbs-raw.md</code>
+</footer>
+
+<script>
+  // 由 AGENTS.md 規範自動同步自 raw/herbs-raw.md 與 wiki/*.md
+  const herbsData = [
+    {
+      id: "mugwort",
+      name: "艾草",
+      alias: "艾、艾葉 (mugwort)",
+      scientificName: "Artemisia argyi H. Lév. & Vaniot（市售物種與藥材來源可能因地區而異）",
+      category: "溫經散寒",
+      nature: "辛、苦、溫；歸肝、脾、腎經",
+      summary: "常用於溫經、散寒、止痛，亦見於艾灸與民間驅蟲、除濕用途。",
+      effects: "傳統用途常用於溫經、散寒、止痛；亦廣泛見於艾灸與民間驅蟲、除濕等應用。",
+      precautions: "菊科植物過敏者應留意；燃燒艾條可能產生煙霧與懸浮微粒。孕期、異常出血或欲以其處理婦科症狀者，應先諮詢專業人員。",
+      related: ["perilla", "chrysanthemum", "beggar_ticks"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "peppermint",
+      name: "薄荷",
+      alias: "薄荷葉 (peppermint)",
+      scientificName: "Mentha × piperita L.（台灣亦常見其他 Mentha 屬植物以薄荷名流通）",
+      category: "疏散風熱",
+      nature: "辛、涼；常記歸肺、肝經",
+      summary: "常用於疏散風熱、清利頭目、利咽、透疹與疏肝行氣。",
+      effects: "傳統用途常用於疏散風熱、清利頭目、利咽、透疹與疏肝行氣，日常常作清涼茶飲。",
+      precautions: "濃縮薄荷油與一般泡飲不同；胃食道逆流者可能因薄荷而加重不適。嬰幼兒臉部附近避免使用含薄荷醇的濃縮產品。",
+      related: ["perilla", "chrysanthemum", "honeysuckle"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "houttuynia",
+      name: "魚腥草",
+      alias: "蕺菜、折耳根 (houttuynia)",
+      scientificName: "Houttuynia cordata Thunb.",
+      category: "清熱解毒",
+      nature: "辛，微寒；常記歸肺經",
+      summary: "常用於清熱解毒、消癰排膿、利尿通淋；嫩葉亦可作野菜食用。",
+      effects: "傳統用途常用於清熱解毒、消癰排膿、利尿通淋；嫩葉亦可作野菜食用。",
+      precautions: "氣味特殊且個別耐受性不同；可能引發過敏或腸胃不適。感染、發燒或泌尿／呼吸道症狀持續時，不應以草藥自行延誤診治。",
+      related: ["honeysuckle", "beggar_ticks"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "honeysuckle",
+      name: "金銀花",
+      alias: "忍冬花 (honeysuckle flower)",
+      scientificName: "Lonicera japonica Thunb.（藥材部位：乾燥花蕾或初開的花）",
+      category: "清熱解毒",
+      nature: "甘，寒；常記歸肺、心、胃經",
+      summary: "取忍冬乾燥花蕾或初開之花，常用於清熱解毒、疏散風熱與花草茶飲。",
+      effects: "傳統用途常用於清熱解毒、疏散風熱；民間常泡茶飲用。",
+      precautions: "易腹瀉、脾胃虛寒或對相關植物過敏者應謹慎。市售花草茶成分與品質差異大，不能取代感染或高燒的醫療評估。",
+      related: ["houttuynia", "chrysanthemum", "peppermint"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "goji",
+      name: "枸杞",
+      alias: "枸杞子、寧夏枸杞 (goji berry / wolfberry)",
+      scientificName: "Lycium barbarum L.",
+      category: "滋補明目",
+      nature: "甘，平；常記歸肝、腎經",
+      summary: "常用於滋補肝腎、益精明目；果實常入茶飲、湯品與藥膳。",
+      effects: "傳統用途常用於滋補肝腎、益精明目；果實常入茶飲、湯品與藥膳。",
+      precautions: "含糖量與食用量應納入飲食考量。曾有與華法林（warfarin）交互作用的個案報告；服用抗凝血藥或多重藥物者宜先詢問醫師／藥師。",
+      related: ["chrysanthemum"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "chrysanthemum",
+      name: "菊花",
+      alias: "杭菊、白菊花、黃菊花 (chrysanthemum flower)",
+      scientificName: "Chrysanthemum morifolium Ramat.（不同品種與商品名成分可能不同）",
+      category: "滋補明目",
+      nature: "甘、苦，微寒；常記歸肺、肝經",
+      summary: "常用於疏散風熱、平肝明目、清熱解毒；常作花草茶。",
+      effects: "傳統用途常用於疏散風熱、平肝明目、清熱解毒；常作花草茶飲用。",
+      precautions: "菊科過敏者宜避免或先做專業評估；眼紅、頭痛、發燒等症狀若嚴重或持續，應尋求診療。",
+      related: ["goji", "mugwort", "beggar_ticks", "honeysuckle"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "perilla",
+      name: "紫蘇",
+      alias: "蘇葉、紫蘇葉 (perilla)",
+      scientificName: "Perilla frutescens (L.) Britt.",
+      category: "疏散風熱",
+      nature: "辛，溫；常記歸肺、脾經",
+      summary: "常用於解表散寒、行氣和胃、解魚蟹毒；葉片亦常作料理香草。",
+      effects: "傳統用途常用於解表散寒、行氣和胃、解魚蟹毒；葉片亦常作料理香草。",
+      precautions: "香草調味用量與濃縮萃取物風險不同。對唇形科植物或香草過敏者須留意；不宜將其視為處理食物中毒或嚴重過敏的替代方法。",
+      related: ["peppermint", "mugwort"],
+      source: "raw/herbs-raw.md"
+    },
+    {
+      id: "beggar_ticks",
+      name: "咸豐草",
+      alias: "鬼針草、白花鬼針草 (beggar ticks / Spanish needle)",
+      scientificName: "Bidens pilosa L.",
+      category: "清熱解毒",
+      nature: "苦、微寒（歸經記載未如常用中藥一致）",
+      summary: "台灣民間常將地上部作清熱、消炎、利尿或外敷用途；果實具倒鉤。",
+      effects: "台灣民間常將地上部作清熱、消炎、利尿或外敷用途；其果實具倒鉤，易黏附衣物與動物毛髮。",
+      precautions: "多屬民間使用經驗，臨床證據與製劑品質有限。菊科過敏者應特別小心；自行採集需避免農藥、重金屬、道路污染與誤認植物。",
+      related: ["houttuynia", "mugwort", "chrysanthemum"],
+      source: "raw/herbs-raw.md"
+    }
+  ];
+
+  const logData = [
+    {
+      date: "2026-11-16",
+      type: "ingest",
+      title: "建立台灣常見草藥知識庫初始索引與八種本草條目",
+      detail: "讀取 raw/herbs-raw.md 之八種草藥資料，生成個別 Markdown 實體頁、分類目錄（wiki/index.md）與中式本草風格展示網頁。"
+    }
+  ];
+
+  let currentCategory = "全部";
+
+  function init() {
+    renderFilters();
+    renderCards();
+    document.getElementById("searchInput").addEventListener("input", renderCards);
+  }
+
+  function renderFilters() {
+    const categories = ["全部", ...new Set(herbsData.map(h => h.category))];
+    const container = document.getElementById("categoryFilters");
+    container.innerHTML = categories.map(cat => `
+      <button class="filter-btn ${cat === currentCategory ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>
+    `).join("");
+  }
+
+  function setCategory(cat) {
+    currentCategory = cat;
+    renderFilters();
+    renderCards();
+  }
+
+  function renderCards() {
+    const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+    const filtered = herbsData.filter(h => {
+      const matchCat = currentCategory === "全部" || h.category === currentCategory;
+      const text = `${h.name} ${h.alias} ${h.scientificName} ${h.effects} ${h.nature} ${h.precautions}`.toLowerCase();
+      return matchCat && text.includes(keyword);
+    });
+
+    const grid = document.getElementById("herbGrid");
+    if (filtered.length === 0) {
+      grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:#635B52; padding:2rem;">查無符合「${keyword}」之本草條目，請嘗試其他檢索詞。</p>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(h => `
+      <div class="card" onclick="openDetail('${h.id}')">
+        <div class="card-banner">
+          <img src="./assets/${h.id}.jpg" alt="${h.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="svg-placeholder" style="display:none;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#233D32" stroke-width="1.6">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+            <span style="margin-top:4px; font-family:'DFKai-SB',serif;">【${h.name}本草錄】</span>
+          </div>
+          <span class="badge">${h.category}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${h.name}</div>
+          <div class="card-sci">${h.scientificName}</div>
+          <div class="card-nature">${h.nature}</div>
+          <div class="card-desc">${h.summary}</div>
+          <div class="card-footer">查閱本草詳情與配伍關聯 →</div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function openDetail(id) {
+    const herb = herbsData.find(h => h.id === id);
+    if (!herb) return;
+
+    const relatedButtons = herb.related.map(relId => {
+      const target = herbsData.find(x => x.id === relId);
+      return target ? `<button class="cross-link-btn" onclick="openDetail('${target.id}')">🌿 ${target.name}（${target.category}）</button>` : "";
+    }).join("");
+
+    document.getElementById("detailContent").innerHTML = `
+      <button class="close-btn" onclick="closeModal('detailModal')">&times;</button>
+      <span style="background:#A8382B; color:#FDF8F2; padding:0.2rem 0.65rem; border-radius:3px; font-size:0.78rem; letter-spacing:1px;">${herb.category}</span>
+      <h2 style="margin-top:0.55rem;">${herb.name} <small style="font-size:0.9rem; color:#635B52; font-family:sans-serif;">(${herb.alias})</small></h2>
+      <div class="sci">${herb.scientificName}</div>
+      <div class="detail-row"><span class="detail-label">【傳統性味歸經】</span>${herb.nature}</div>
+      <div class="detail-row"><span class="detail-label">【傳統用途與應用】</span>${herb.effects}</div>
+      <div class="detail-row"><span class="detail-label">【使用禁忌與風險提示】</span>${herb.precautions}</div>
+      <div class="detail-row">
+        <span class="detail-label">【關聯本草索引】</span>
+        <div class="cross-links">${relatedButtons}</div>
+      </div>
+      <div class="safety-box">
+        <strong>共通安全備註：</strong>本資料不提供劑量、處方或疾病治療方案。植物正確鑑定、炮製方式與個人體質皆會改變風險，使用前請先向醫療專業人員確認。
+      </div>
+      <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed #C9BFA9; font-size:0.8rem; color:#635B52; font-family:sans-serif;">
+        條目檔案：<code>wiki/${herb.id}.md</code> ｜ 文獻出處：<code>${herb.source}</code>
+      </div>
+    `;
+    document.getElementById("detailModal").classList.add("open");
+  }
+
+  function openLogModal() {
+    document.getElementById("logList").innerHTML = logData.map(item => `
+      <div class="log-entry">
+        <div style="font-weight:bold; color:#233D32;">[${item.date}] ${item.type.toUpperCase()} ｜ ${item.title}</div>
+        <div style="font-size:0.9rem; margin-top:0.3rem;">${item.detail}</div>
+      </div>
+    `).join("");
+    document.getElementById("logModal").classList.add("open");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+
+  init();
+</script>
+</body>
+</html>
